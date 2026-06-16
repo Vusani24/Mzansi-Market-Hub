@@ -1,0 +1,1836 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Portal | Mzansi Market Place</title>
+  <style>
+    :root {
+      --ink: #151816;
+      --muted: #625d73;
+      --paper: #35144f;
+      --panel: #fff9fd;
+      --line: #efd3f3;
+      --brand: #ff3d8d;
+      --brand-dark: #b51662;
+      --accent: #ffb000;
+      --danger: #ff4d2e;
+      --blue: #1687ff;
+      --shadow: 0 18px 45px rgba(78, 38, 88, .22);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: linear-gradient(180deg, #ff3d8d, #7a29ff 52%, #35144f), var(--paper);
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    .topbar { border-bottom: 1px solid rgba(255,255,255,.42); background: #fff4fb; }
+    .topbar-inner, main { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 950; }
+    .brand-mark {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      background: var(--brand);
+    }
+    main { padding: 42px 0 72px; }
+    h1, h2, h3 { margin: 0; letter-spacing: 0; }
+    h1 { color: #effff5; font-size: clamp(34px, 5vw, 58px); }
+    p { color: var(--muted); line-height: 1.55; }
+    footer {
+      padding: 22px;
+      color: rgba(255,255,255,.84);
+      text-align: center;
+      font-size: 14px;
+    }
+    footer a {
+      color: #fff;
+      font-weight: 900;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .hero-row {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .hero-row p { color: rgba(239,255,245,.78); }
+    .login-shell, .panel, .listing-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    .login-shell {
+      max-width: 460px;
+      margin: 48px auto;
+      padding: 24px;
+    }
+    label { display: block; margin-bottom: 7px; color: #343a35; font-size: 13px; font-weight: 900; }
+    input, select, textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      background: #fff;
+      font: inherit;
+    }
+    textarea { min-height: 96px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: var(--brand); outline: 3px solid rgba(255,61,141,.18); }
+    .field { display: grid; gap: 7px; margin-bottom: 14px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 10px 14px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 900;
+    }
+    .btn-primary { color: #fff; background: var(--brand); }
+    .btn-secondary { color: var(--ink); border-color: var(--line); background: #f7fbf8; }
+    .btn-danger { color: #fff; background: var(--danger); }
+    .btn-warning { color: #261800; background: var(--accent); }
+    .portal { display: none; gap: 18px; }
+    .portal.is-visible { display: grid; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .panel { padding: 18px; }
+    .panel-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+    .date-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--brand-dark);
+      background: #fff0f7;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .receipt-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .full { grid-column: 1 / -1; }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .metric {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff0f7;
+    }
+    .metric strong { display: block; margin-top: 5px; color: var(--brand-dark); font-size: 24px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 18px; }
+    .tab { border-color: var(--line); background: #fff0f7; }
+    .tab.is-active { color: #fff; border-color: var(--brand); background: var(--brand); }
+    .moderation-controls {
+      display: grid;
+      grid-template-columns: 1.4fr repeat(2, minmax(160px, 1fr));
+      gap: 12px;
+      margin: 14px 0;
+    }
+    .bulk-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0 16px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .listing-list { display: grid; gap: 16px; }
+    .listing-card {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 18px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(20,35,27,.08);
+    }
+    .queue-table {
+      display: grid;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .queue-row {
+      display: grid;
+      grid-template-columns: .8fr .9fr 1.1fr 1.4fr 1fr 1fr .8fr;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .queue-row strong { color: var(--brand-dark); }
+    .select-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--brand-dark);
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .images {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      align-content: start;
+    }
+    .image-tile {
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f6dffc;
+    }
+    .media-button {
+      display: block;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border: 0;
+      cursor: zoom-in;
+      background: transparent;
+    }
+    .image-tile img,
+    .image-tile video { width: 100%; height: 100%; object-fit: cover; }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .detail {
+      min-height: 48px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff0f7;
+      font-size: 13px;
+    }
+    .detail strong { display: block; margin-bottom: 3px; color: #343a35; font-size: 12px; }
+    .private {
+      padding: 12px;
+      border: 1px solid #cbe2d6;
+      border-radius: 8px;
+      background: #ffe1f0;
+      color: var(--brand-dark);
+      font-weight: 800;
+    }
+    .verification-box {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid #ffd166;
+      border-radius: 8px;
+      background: #fff8df;
+    }
+    .verification-files {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .verification-file {
+      display: grid;
+      gap: 8px;
+      min-height: 84px;
+      padding: 10px;
+      border: 1px solid #f2d37b;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 13px;
+    }
+    .verification-file img {
+      width: 100%;
+      max-height: 170px;
+      object-fit: contain;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff0f7;
+    }
+    .verification-file a {
+      color: var(--brand-dark);
+      font-weight: 900;
+    }
+    .media-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 72px 18px 28px;
+      background: rgba(10, 6, 18, .92);
+    }
+    .media-lightbox.is-visible { display: flex; }
+    .media-lightbox-stage {
+      display: grid;
+      place-items: center;
+      width: min(1180px, 100%);
+      height: min(760px, calc(100vh - 120px));
+      overflow: auto;
+    }
+    .media-lightbox-stage img,
+    .media-lightbox-stage video {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #050409;
+      box-shadow: 0 24px 70px rgba(0,0,0,.42);
+    }
+    .media-lightbox-stage video {
+      width: min(1120px, 100%);
+      height: min(680px, calc(100vh - 140px));
+    }
+    .media-lightbox-close,
+    .media-lightbox-control {
+      display: inline-grid;
+      place-items: center;
+      min-width: 44px;
+      min-height: 44px;
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 8px;
+      color: #fff;
+      background: #ff3d8d;
+      cursor: pointer;
+      font-size: 22px;
+      font-weight: 950;
+    }
+    .media-lightbox-close {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+    }
+    .media-lightbox-controls {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      display: flex;
+      gap: 8px;
+    }
+    .media-lightbox-caption {
+      position: fixed;
+      left: 18px;
+      right: 82px;
+      bottom: 12px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--brand);
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .badge.red { background: var(--danger); }
+    .badge.gold { color: #251800; background: var(--accent); }
+    .badge.green { background: #1687ff; }
+    .empty {
+      padding: 18px;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      background: #fff4fb;
+    }
+    .receipt-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 13px;
+    }
+    .receipt-table th,
+    .receipt-table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    .receipt-table th { color: var(--brand-dark); }
+    .activity-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .activity-item {
+      display: grid;
+      gap: 4px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .activity-item strong { color: var(--brand-dark); }
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .report-card {
+      display: grid;
+      gap: 6px;
+      min-height: 96px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .report-card span { color: var(--muted); font-size: 13px; font-weight: 900; }
+    .report-card strong { color: var(--brand-dark); font-size: 24px; line-height: 1.1; }
+    .report-section {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+    .report-section h3 { margin-bottom: 8px; color: var(--brand-dark); }
+    .mini-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .mini-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .error, .notice {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-weight: 900;
+    }
+    .error { color: #7f2318; background: #fde5df; }
+    .notice { color: #6b3300; background: #fff0bc; }
+    .error.is-visible, .notice.is-visible { display: block; }
+    .hint { color: var(--muted); font-size: 12px; line-height: 1.45; }
+    @media (max-width: 900px) {
+      .hero-row, .topbar-inner, .panel-head { align-items: start; flex-direction: column; }
+      .dashboard-grid, .detail-grid, .receipt-grid, .report-grid, .moderation-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .queue-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .listing-card { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .dashboard-grid, .detail-grid, .receipt-grid, .report-grid, .moderation-controls, .queue-row { grid-template-columns: 1fr; }
+      .full { grid-column: auto; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">MM</span>
+        <span>Mzansi Market Place Admin</span>
+      </a>
+      <a class="btn btn-secondary" href="index.html">View Public Site</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="login-shell" id="loginScreen">
+      <h2>Admin Login</h2>
+      <p>Review seller submissions, approve safe listings, reject unsafe listings, and track marketplace metrics. Remember: 15% charge on completed sales, cash on delivery, no delivery no payment, and R30 if the buyer changes their mind while delivery is on the way.</p>
+      <div class="error" id="loginError">Incorrect admin password.</div>
+      <form id="loginForm">
+        <div class="field">
+          <label for="adminPassword">Password</label>
+          <input id="adminPassword" type="password" autocomplete="current-password" required placeholder="Enter admin password">
+          <span class="hint">Use the admin password provided by Mzansi Market Place.</span>
+        </div>
+        <button class="btn btn-primary" type="submit">Log In</button>
+      </form>
+    </section>
+
+    <section class="portal" id="portal">
+      <div class="hero-row">
+        <div>
+          <h1>Admin Portal</h1>
+          <p>Moderate listings before they reach buyers. Mzansi Market Place charges 15% on completed sales, uses cash on delivery, and charges R30 when a buyer changes their mind while delivery is already on the way.</p>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" id="refreshButton" type="button">Refresh Listings</button>
+          <button class="btn btn-secondary" id="logoutButton" type="button">Log Out</button>
+        </div>
+      </div>
+
+      <div class="notice" id="notice"></div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Moderation Queue</h2>
+          <span class="date-pill" id="moderationDate"></span>
+        </div>
+        <p>Check item details, seller contact, images, price, delivery paths, and any system warnings before approval. Buyers pay on delivery; no delivery means no payment unless they cancel while delivery is already moving.</p>
+        <div class="report-grid" id="moderationStats"></div>
+        <div class="moderation-controls" aria-label="Moderation filters">
+          <div class="field">
+            <label for="moderationSearch">Search Listings</label>
+            <input id="moderationSearch" type="search" placeholder="Search title, seller, phone, category, location">
+          </div>
+          <div class="field">
+            <label for="moderationCategory">Filter by Category</label>
+            <select id="moderationCategory"></select>
+          </div>
+          <div class="field">
+            <label for="moderationPriority">Filter by Priority</label>
+            <select id="moderationPriority">
+              <option value="all">All priorities</option>
+              <option value="High Priority">High Priority</option>
+              <option value="Medium Priority">Medium Priority</option>
+              <option value="Low Priority">Low Priority</option>
+            </select>
+          </div>
+        </div>
+        <div class="bulk-bar">
+          <label class="select-line"><input id="selectAllListings" type="checkbox"> Select visible listings</label>
+          <button class="btn btn-primary" type="button" id="bulkApproveButton">Bulk Approve</button>
+          <button class="btn btn-danger" type="button" id="bulkRejectButton">Bulk Reject</button>
+          <span class="hint">Bulk actions apply to checked listings in the current tab.</span>
+        </div>
+        <div class="queue-table" id="queueTable"></div>
+        <div class="tabs" aria-label="Admin listing sections">
+          <button class="btn tab is-active" type="button" data-view="pending">Pending</button>
+          <button class="btn tab" type="button" data-view="approved">Approved</button>
+          <button class="btn tab" type="button" data-view="taken">Taken</button>
+          <button class="btn tab" type="button" data-view="changedMind">Changed Mind</button>
+          <button class="btn tab" type="button" data-view="rejected">Rejected</button>
+          <button class="btn tab" type="button" data-view="flagged">Flagged</button>
+        </div>
+        <div class="listing-list" id="listingList"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Business Stats</h2>
+        <p>Growth, performance, leads, and revenue numbers for sellers, service providers, advertisers, and business owners.</p>
+        <div class="dashboard-grid" id="dashboardMetrics"></div>
+        <div id="businessStatsDetails"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Appointments Booked</h2>
+        <p>Basket checkout bookings from buyers appear here with buyer details, delivery address, meetup date/time, item information, and seller information.</p>
+        <div id="appointmentsList"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Website Activity</h2>
+        <p>Live business tracking for Mzansi Market Place. This dashboard refreshes every minute while admin is logged in.</p>
+        <div id="activityDashboard"></div>
+      </div>
+
+      <div class="panel" id="receiptPanel">
+        <h2>Receipt Section</h2>
+        <p>Create a printable receipt after delivery is completed, or record the R30 fee when the buyer changes their mind while delivery is already on the way.</p>
+        <form id="receiptForm">
+          <div class="receipt-grid">
+            <div class="field full">
+              <label for="receiptListing">Approved item or service</label>
+              <select id="receiptListing" required></select>
+            </div>
+            <div class="field">
+              <label for="buyerName">Buyer full name</label>
+              <input id="buyerName" required placeholder="Buyer name">
+            </div>
+            <div class="field">
+              <label for="buyerPhone">Buyer contact number</label>
+              <input id="buyerPhone" required placeholder="Phone or WhatsApp">
+            </div>
+            <div class="field">
+              <label for="saleAmount">Sale amount</label>
+              <input id="saleAmount" required inputmode="decimal" placeholder="Item price">
+            </div>
+            <div class="field">
+              <label for="deliveryStatus">Delivery result</label>
+              <select id="deliveryStatus">
+                <option value="delivered">Delivered - cash on delivery</option>
+                <option value="cancelled_on_way">Buyer changed mind during delivery</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="paymentMethod">Payment type</label>
+              <select id="paymentMethod">
+                <option value="Cash on Delivery">Cash on Delivery</option>
+                <option value="EFT on Delivery">EFT on Delivery</option>
+                <option value="Cash Send on Delivery">Cash Send on Delivery</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label for="receiptNotes">Receipt notes</label>
+              <textarea id="receiptNotes" placeholder="Delivery details, driver name, meetup place, or extra notes"></textarea>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" type="submit">Create Receipt</button>
+            <button class="btn btn-secondary" type="reset">Clear Receipt Form</button>
+          </div>
+        </form>
+        <div id="receiptHistory"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="media-lightbox" id="mediaLightbox" aria-hidden="true">
+    <div class="media-lightbox-controls" id="mediaLightboxControls">
+      <button class="media-lightbox-control" type="button" data-zoom="out" aria-label="Zoom out">-</button>
+      <button class="media-lightbox-control" type="button" data-zoom="reset" aria-label="Reset zoom">100</button>
+      <button class="media-lightbox-control" type="button" data-zoom="in" aria-label="Zoom in">+</button>
+    </div>
+    <button class="media-lightbox-close" type="button" id="mediaLightboxClose" aria-label="Close media viewer">X</button>
+    <div class="media-lightbox-stage" id="mediaLightboxStage"></div>
+    <div class="media-lightbox-caption" id="mediaLightboxCaption"></div>
+  </div>
+
+  <footer>
+    Mzansi Market Place Admin | <a href="terms.html">Terms & Conditions</a>
+  </footer>
+
+  <script>
+    const ADMIN_PASSWORD = "Khanya0901@2";
+    const API_BASE = location.protocol === "file:" ? "http://localhost:3100" : "";
+    const fallbackImage = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80";
+    const state = { view: "pending", token: localStorage.getItem("mzansi-admin-token") || "", data: null, selectedListings: new Set() };
+    const loginScreen = document.querySelector("#loginScreen");
+    const portal = document.querySelector("#portal");
+    const loginForm = document.querySelector("#loginForm");
+    const loginError = document.querySelector("#loginError");
+    const listingList = document.querySelector("#listingList");
+    const queueTable = document.querySelector("#queueTable");
+    const moderationStats = document.querySelector("#moderationStats");
+    const moderationSearch = document.querySelector("#moderationSearch");
+    const moderationCategory = document.querySelector("#moderationCategory");
+    const moderationPriority = document.querySelector("#moderationPriority");
+    const selectAllListings = document.querySelector("#selectAllListings");
+    const bulkApproveButton = document.querySelector("#bulkApproveButton");
+    const bulkRejectButton = document.querySelector("#bulkRejectButton");
+    const dashboardMetrics = document.querySelector("#dashboardMetrics");
+    const businessStatsDetails = document.querySelector("#businessStatsDetails");
+    const appointmentsList = document.querySelector("#appointmentsList");
+    const notice = document.querySelector("#notice");
+    const receiptForm = document.querySelector("#receiptForm");
+    const receiptPanel = document.querySelector("#receiptPanel");
+    const receiptListing = document.querySelector("#receiptListing");
+    const saleAmount = document.querySelector("#saleAmount");
+    const deliveryStatus = document.querySelector("#deliveryStatus");
+    const paymentMethod = document.querySelector("#paymentMethod");
+    const receiptHistory = document.querySelector("#receiptHistory");
+    const moderationDate = document.querySelector("#moderationDate");
+    const activityDashboard = document.querySelector("#activityDashboard");
+    const mediaLightbox = document.querySelector("#mediaLightbox");
+    const mediaLightboxStage = document.querySelector("#mediaLightboxStage");
+    const mediaLightboxCaption = document.querySelector("#mediaLightboxCaption");
+    const mediaLightboxControls = document.querySelector("#mediaLightboxControls");
+    const mediaLightboxClose = document.querySelector("#mediaLightboxClose");
+    let mediaStore = new Map();
+    let activeZoom = 1;
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+      }[char]));
+    }
+
+    function money(value) {
+      const amount = Number(String(value || "").replace(/[^\d.]/g, ""));
+      return Number.isFinite(amount) && amount > 0
+        ? amount.toLocaleString("en-ZA", { style: "currency", currency: "ZAR" })
+        : "Ask price";
+    }
+
+    function moneyTotal(value) {
+      const amount = Number(String(value || "").replace(/[^\d.]/g, ""));
+      return (Number.isFinite(amount) ? amount : 0).toLocaleString("en-ZA", { style: "currency", currency: "ZAR" });
+    }
+
+    function moneyNumber(value) {
+      const amount = Number(String(value || "").replace(/[^\d.]/g, ""));
+      return Number.isFinite(amount) ? amount : 0;
+    }
+
+    function longDate(value = new Date()) {
+      return new Date(value).toLocaleDateString("en-ZA", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+    }
+
+    function shortDate(value = new Date()) {
+      return new Date(value).toISOString().slice(0, 10);
+    }
+
+    function inLastDays(value, days) {
+      return Date.now() - new Date(value).getTime() <= days * 24 * 60 * 60 * 1000;
+    }
+
+    function uniqueCount(items, key) {
+      return new Set(items.map((item) => item[key]).filter(Boolean)).size;
+    }
+
+    function allListings() {
+      const listings = state.data?.listings || {};
+      return Object.values(listings).flat().filter(Boolean);
+    }
+
+    function countBy(items, picker) {
+      return items.reduce((map, item) => {
+        const key = picker(item) || "Other";
+        map[key] = (map[key] || 0) + 1;
+        return map;
+      }, {});
+    }
+
+    function topRows(map, labels = []) {
+      const keys = labels.length ? labels : Object.keys(map);
+      const rows = keys.map((key) => [key, map[key] || 0]).sort((a, b) => b[1] - a[1]);
+      return rows.length ? rows.map(([label, value]) => `<div class="mini-row"><span>${escapeHTML(label)}</span><strong>${value}</strong></div>`).join("") : `<div class="empty">No data yet.</div>`;
+    }
+
+    function metricCard(label, value) {
+      return `<div class="report-card"><span>${escapeHTML(label)}</span><strong>${value}</strong></div>`;
+    }
+
+    function businessKey(item) {
+      return item.sellerPhone || item.sellerEmail || item.sellerName || item.id;
+    }
+
+    function uniqueBusinessCount(items) {
+      return new Set(items.map(businessKey).filter(Boolean)).size;
+    }
+
+    function categoryGroup(item) {
+      const text = [item.category, item.title, item.description].join(" ").toLowerCase();
+      if (text.includes("room") || text.includes("rent") || text.includes("property")) return "Rooms & Property";
+      if (text.includes("electronic") || text.includes("phone") || text.includes("tablet") || text.includes("cellphone")) return "Electronics";
+      if (text.includes("vehicle") || text.includes("car") || text.includes("mechanic")) return "Vehicles";
+      if (text.includes("building") || text.includes("construction") || text.includes("builder") || text.includes("roof") || text.includes("tiling")) return "Building & Construction";
+      if (text.includes("plumb")) return "Plumbing";
+      if (text.includes("electric") || text.includes("solar") || text.includes("inverter")) return "Electrical";
+      if (text.includes("carpentry") || text.includes("wood") || text.includes("cupboard") || text.includes("wardrobe")) return "Carpentry";
+      if (text.includes("transport") || text.includes("delivery") || text.includes("courier") || text.includes("move")) return "Transport";
+      if (text.includes("beauty") || text.includes("fashion") || text.includes("clean")) return "Beauty & Fashion";
+      return "Other Services";
+    }
+
+    function areaGroup(item) {
+      const text = [item.meetupHub, item.description, item.title].join(" ").toLowerCase();
+      if (text.includes("alex")) return "Alexandra";
+      if (text.includes("midrand")) return "Midrand";
+      if (text.includes("sandton")) return "Sandton";
+      if (text.includes("johannesburg") || text.includes("cbd") || text.includes("park station")) return "Johannesburg CBD";
+      if (text.includes("soweto")) return "Soweto";
+      if (text.includes("tembisa")) return "Tembisa";
+      return "Other Areas";
+    }
+
+    function countBusinessesBy(items, picker) {
+      return items.reduce((map, item) => {
+        const group = picker(item);
+        const key = businessKey(item);
+        if (!map[group]) map[group] = new Set();
+        if (key) map[group].add(key);
+        return map;
+      }, {});
+    }
+
+    function businessRows(setMap, labels) {
+      const rows = labels.map((label) => [label, setMap[label]?.size || 0]);
+      return rows.map(([label, value]) => `<div class="mini-row"><span>${escapeHTML(label)}</span><strong>${value}</strong></div>`).join("");
+    }
+
+    function verificationStatus(item) {
+      if (item.verification?.required && item.verification?.document && item.verification?.selfie) return "Verified";
+      if (item.verification?.required) return "Pending Verification";
+      return "Not Required";
+    }
+
+    function priorityLevel(item) {
+      const warnings = warningText(item);
+      if (state.view === "flagged" || warnings.length || (item.price > 2500 && verificationStatus(item) !== "Verified")) return "High Priority";
+      if (state.view === "pending") return "Medium Priority";
+      return "Low Priority";
+    }
+
+    function priorityBadge(item) {
+      const priority = priorityLevel(item);
+      if (priority === "High Priority") return `<span class="badge red">High Priority</span>`;
+      if (priority === "Medium Priority") return `<span class="badge gold">Medium Priority</span>`;
+      return `<span class="badge green">Low Priority</span>`;
+    }
+
+    function compactDate(value) {
+      return new Date(value || Date.now()).toLocaleDateString("en-ZA", { day: "2-digit", month: "short" });
+    }
+
+    function avgApprovalTimeHours() {
+      const approved = state.data?.listings?.approved || [];
+      const times = approved
+        .map((item) => new Date(item.updatedAt || item.createdAt).getTime() - new Date(item.createdAt).getTime())
+        .filter((value) => Number.isFinite(value) && value >= 0);
+      if (!times.length) return "0h";
+      const avg = times.reduce((sum, value) => sum + value, 0) / times.length;
+      return `${Math.round(avg / 36e5)}h`;
+    }
+
+    function filteredModerationList() {
+      const query = moderationSearch.value.trim().toLowerCase();
+      const selectedCategory = moderationCategory.value;
+      const selectedPriority = moderationPriority.value;
+      return currentList().filter((item) => {
+        const text = [item.id, item.title, item.category, item.sellerName, item.sellerPhone, item.sellerEmail, item.meetupHub, item.description].join(" ").toLowerCase();
+        const categoryMatch = selectedCategory === "all" || item.category === selectedCategory;
+        const priorityMatch = selectedPriority === "all" || priorityLevel(item) === selectedPriority;
+        return (!query || text.includes(query)) && categoryMatch && priorityMatch;
+      });
+    }
+
+    function populateModerationCategoryFilter() {
+      const categories = [...new Set(allListings().map((item) => item.category).filter(Boolean))].sort();
+      const current = moderationCategory.value || "all";
+      moderationCategory.innerHTML = `<option value="all">All categories</option>` + categories.map((item) => `<option value="${escapeHTML(item)}">${escapeHTML(item)}</option>`).join("");
+      moderationCategory.value = categories.includes(current) ? current : "all";
+    }
+
+    function showNotice(message) {
+      notice.textContent = message;
+      notice.classList.add("is-visible");
+      setTimeout(() => notice.classList.remove("is-visible"), 3200);
+    }
+
+    function storeMedia(src, type, label) {
+      const key = "media-" + mediaStore.size;
+      mediaStore.set(key, { src, type, label });
+      return key;
+    }
+
+    function mediaButton(src, type, label, content) {
+      const key = storeMedia(src, type, label);
+      return `<button class="media-button" type="button" data-media-key="${key}" aria-label="View ${escapeHTML(label)}">${content}</button>`;
+    }
+
+    function setMediaZoom(value) {
+      activeZoom = Math.min(3, Math.max(1, value));
+      const image = mediaLightboxStage.querySelector("img");
+      if (image) {
+        image.style.transform = `scale(${activeZoom})`;
+        image.style.transformOrigin = "center center";
+      }
+    }
+
+    function openMediaViewer(key) {
+      const media = mediaStore.get(key);
+      if (!media) return;
+      activeZoom = 1;
+      const label = escapeHTML(media.label || "Media");
+      if (media.type === "video") {
+        mediaLightboxStage.innerHTML = `<video src="${escapeHTML(media.src)}" controls autoplay playsinline></video>`;
+        mediaLightboxControls.style.display = "none";
+      } else {
+        mediaLightboxStage.innerHTML = `<img src="${escapeHTML(media.src)}" alt="${label}">`;
+        mediaLightboxControls.style.display = "flex";
+      }
+      mediaLightboxCaption.textContent = media.label || "";
+      mediaLightbox.classList.add("is-visible");
+      mediaLightbox.setAttribute("aria-hidden", "false");
+      mediaLightboxClose.focus();
+    }
+
+    function closeMediaViewer() {
+      mediaLightbox.classList.remove("is-visible");
+      mediaLightbox.setAttribute("aria-hidden", "true");
+      mediaLightboxStage.innerHTML = "";
+      mediaLightboxCaption.textContent = "";
+      activeZoom = 1;
+    }
+
+    function warningText(item) {
+      const warnings = [];
+      const price = Number(item.price || 0);
+      const verification = item.verification || {};
+      if (item.listingType === "service" && verification.type && verification.document && verification.selfie) {
+        warnings.push("Service provider verification uploaded. Review the ID/passport and selfie before approval.");
+      } else if (item.listingType === "service") {
+        warnings.push("Service provider verification missing: ID/passport and selfie required.");
+      }
+      if (item.listingType !== "service" && price > 2500 && verification.type && verification.document && verification.selfie) {
+        warnings.push("High-value verification uploaded. Review the ID/passport and selfie before approval.");
+      } else if (item.listingType !== "service" && price > 2500) {
+        warnings.push("High-value item: ID/passport and selfie missing.");
+      }
+      if (/(\+?\d[\d\s-]{7,}|@|bank|account number)/i.test(item.description || "")) warnings.push("Possible contact or payment detail in public description.");
+      if (item.listingType !== "service" && !(item.images || []).length && !item.video && !item.attachment) warnings.push("No image, video, or file uploaded.");
+      return warnings;
+    }
+
+    function attachmentHTML(item) {
+      if (!item.attachment?.data) return "";
+      const name = escapeHTML(item.attachment.name || "Uploaded file");
+      const action = /^data:image\//i.test(item.attachment.data)
+        ? mediaButton(item.attachment.data, "image", item.attachment.name || "Uploaded file", `View File: ${name}`)
+        : /^data:video\//i.test(item.attachment.data)
+          ? mediaButton(item.attachment.data, "video", item.attachment.name || "Uploaded file", `View File: ${name}`)
+          : `<a href="${escapeHTML(item.attachment.data)}" target="_blank" rel="noopener">View File: ${name}</a>`;
+      return `
+        <div class="private" style="margin-top:12px;">
+          File attachment: ${action}
+        </div>
+      `;
+    }
+
+    function verificationFileHTML(file, label) {
+      if (!file?.data) {
+        return `<div class="verification-file"><strong>${label}</strong><span class="hint">Missing</span></div>`;
+      }
+      const name = escapeHTML(file.name || label);
+      const data = escapeHTML(file.data);
+      const preview = /^data:image\//i.test(file.data)
+        ? mediaButton(file.data, "image", `${label}: ${file.name || "uploaded image"}`, `<img src="${data}" alt="${name}">`)
+        : `<a href="${data}" target="_blank" rel="noopener">Open uploaded document</a>`;
+      return `<div class="verification-file"><strong>${label}</strong>${preview}<span>${name}</span></div>`;
+    }
+
+    function verificationHTML(item) {
+      const verification = item.verification || {};
+      const show = Number(item.price || 0) > 2500 || verification.required || verification.type || verification.document || verification.selfie;
+      if (!show) return "";
+      return `
+        <div class="verification-box">
+          <strong>High-value seller verification</strong>
+          <span class="hint">Type: ${escapeHTML(verification.type || "Not selected")} | Required for items over R2,500</span>
+          <div class="verification-files">
+            ${verificationFileHTML(verification.document, "ID or passport")}
+            ${verificationFileHTML(verification.selfie, "Selfie")}
+          </div>
+        </div>
+      `;
+    }
+
+    function mediaTiles(item) {
+      const images = (item.images || []).slice(0, 3).map((src) => (
+        `<div class="image-tile">${mediaButton(src || fallbackImage, "image", item.title || "Listing image", `<img src="${escapeHTML(src || fallbackImage)}" alt="${escapeHTML(item.title)}">`)}</div>`
+      ));
+      if (item.video) {
+        images.unshift(`<div class="image-tile">${mediaButton(item.video, "video", item.title || "Listing video", `<video src="${escapeHTML(item.video)}" muted playsinline preload="metadata" poster="${escapeHTML((item.images || [])[0] || fallbackImage)}"></video>`)}</div>`);
+      }
+      return images.length ? images.join("") : `<div class="image-tile">${mediaButton(fallbackImage, "image", item.title || "Listing image", `<img src="${fallbackImage}" alt="${escapeHTML(item.title)}">`)}</div>`;
+    }
+
+    function apiURL(path) {
+      return API_BASE + path;
+    }
+
+    async function adminFetch(url, options = {}) {
+      const response = await fetch(apiURL(url), {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.token}`,
+          ...(options.headers || {})
+        }
+      });
+      if (response.status === 401) {
+        localStorage.removeItem("mzansi-admin-token");
+        state.token = "";
+        portal.classList.remove("is-visible");
+        loginScreen.style.display = "block";
+        throw new Error("Admin login required");
+      }
+      return response;
+    }
+
+    async function loadData() {
+      const response = await adminFetch("/api/admin/data");
+      state.data = await response.json();
+      renderDashboard();
+      renderReceiptOptions();
+      renderReceiptHistory();
+      renderActivityReports();
+      renderAppointments();
+      populateModerationCategoryFilter();
+      renderListings();
+    }
+
+    function renderDashboard() {
+      const listings = state.data?.listings || {};
+      const approved = listings.approved || [];
+      const pending = listings.pending || [];
+      const rejected = listings.rejected || [];
+      const flagged = listings.flagged || [];
+      const taken = listings.taken || [];
+      const changedMind = listings.changedMind || [];
+      const orders = state.data?.orders || [];
+      const appointments = state.data?.appointments || [];
+      const delivered = orders.filter((item) => item.deliveryStatus === "delivered");
+      const serviceCharges = delivered.reduce((sum, item) => sum + moneyNumber(item.serviceCharge), 0);
+      const analytics = state.data?.analytics?.events || [];
+      const all = allListings();
+      const items = all.filter((item) => item.listingType !== "service");
+      const services = all.filter((item) => item.listingType === "service");
+      const active = [...approved, ...taken];
+      const today = shortDate();
+      const thisMonth = new Date().toISOString().slice(0, 7);
+      const businessesRegistered = uniqueBusinessCount(all);
+      const newBusinessesThisMonth = uniqueBusinessCount(all.filter((item) => String(item.createdAt || "").slice(0, 7) === thisMonth));
+      const activeBusinesses = uniqueBusinessCount(active);
+      const verifiedBusinesses = uniqueBusinessCount(all.filter((item) => item.verification?.required && ["approved", "taken"].includes(item.approvalStatus)));
+      const suspendedBusinesses = uniqueBusinessCount([...rejected, ...flagged]);
+      const activeListings = approved.length;
+      const soldListings = taken.length;
+      const revenue = delivered.reduce((sum, item) => sum + moneyNumber(item.saleAmount), 0);
+      const revenueThisMonth = delivered.filter((item) => String(item.createdAt || "").slice(0, 7) === thisMonth).reduce((sum, item) => sum + moneyNumber(item.saleAmount), 0);
+      const revenueToday = delivered.filter((item) => shortDate(item.createdAt) === today).reduce((sum, item) => sum + moneyNumber(item.saleAmount), 0);
+      const outstandingPayments = approved.reduce((sum, item) => sum + moneyNumber(item.price), 0);
+      const pageViews = analytics.filter((item) => item.type === "page_view");
+      const listingViews = analytics.filter((item) => ["listing_view", "service_view", "whatsapp_click"].includes(item.type));
+      const whatsappClicks = analytics.filter((item) => item.type === "whatsapp_click");
+      const phoneClicks = analytics.filter((item) => item.type === "phone_click");
+      const enquiries = analytics.filter((item) => ["whatsapp_click", "phone_click", "enquiry"].includes(item.type));
+      const quoteRequests = enquiries.filter((item) => item.listingType === "service");
+      const categoryBusinesses = countBusinessesBy(all, categoryGroup);
+      const areaBusinesses = countBusinessesBy(all, areaGroup);
+      const businessContacts = countBy(enquiries, (item) => item.listingId);
+      const mostContactedId = Object.entries(businessContacts).sort((a, b) => b[1] - a[1])[0]?.[0] || "";
+      const mostContacted = all.find((item) => item.id === mostContactedId);
+      const topSeller = taken.filter((item) => item.listingType !== "service")[0];
+      const topProvider = taken.filter((item) => item.listingType === "service")[0];
+      const pendingVerification = pending.filter((item) => item.verification?.required).length;
+      const rejectedVerification = rejected.filter((item) => item.verification?.required).length;
+      dashboardMetrics.innerHTML = [
+        ["Businesses Registered", businessesRegistered],
+        ["Products Listed", items.length],
+        ["Services Listed", services.length],
+        ["Total Views", pageViews.length],
+        ["Enquiries Received", enquiries.length],
+        ["WhatsApp Clicks", whatsappClicks.length],
+        ["Commission Earned", moneyTotal(serviceCharges)],
+        ["Verified Businesses", verifiedBusinesses]
+      ].map(([label, value]) => `<div class="metric">${label}<strong>${value}</strong></div>`).join("");
+      businessStatsDetails.innerHTML = `
+        <div class="report-section">
+          <h3>Business Overview</h3>
+          <div class="report-grid">
+            ${[
+              ["Total Businesses Registered", businessesRegistered],
+              ["New Businesses This Month", newBusinessesThisMonth],
+              ["Active Businesses", activeBusinesses],
+              ["Verified Businesses", verifiedBusinesses],
+              ["Suspended Businesses", suspendedBusinesses]
+            ].map(([label, value]) => metricCard(label, value)).join("")}
+          </div>
+        </div>
+        <div class="report-section">
+          <h3>Listings Performance</h3>
+          <div class="report-grid">
+            ${[
+              ["Total Products Listed", items.length],
+              ["Total Services Listed", services.length],
+              ["Active Listings", activeListings],
+              ["Sold Listings", soldListings],
+              ["Expired Listings", 0]
+            ].map(([label, value]) => metricCard(label, value)).join("")}
+          </div>
+        </div>
+        <div class="report-section">
+          <h3>Revenue & Earnings</h3>
+          <div class="report-grid">
+            ${[
+              ["Total Platform Revenue", moneyTotal(revenue)],
+              ["Commission Earned (15%)", moneyTotal(serviceCharges)],
+              ["Revenue This Month", moneyTotal(revenueThisMonth)],
+              ["Revenue Today", moneyTotal(revenueToday)],
+              ["Outstanding Payments", moneyTotal(outstandingPayments)]
+            ].map(([label, value]) => metricCard(label, value)).join("")}
+          </div>
+        </div>
+        <div class="report-section">
+          <h3>Customer Engagement</h3>
+          <div class="report-grid">
+            ${[
+              ["Total Profile Views", pageViews.length],
+              ["Total Listing Views", listingViews.length],
+              ["WhatsApp Clicks", whatsappClicks.length],
+              ["Phone Call Clicks", phoneClicks.length],
+              ["Enquiries Received", enquiries.length],
+              ["Quote Requests", quoteRequests.length]
+            ].map(([label, value]) => metricCard(label, value)).join("")}
+          </div>
+        </div>
+        <div class="report-section">
+          <h3>Business Growth</h3>
+          <div class="report-grid">
+            ${[
+              ["Top Growing Business", mostContacted ? escapeHTML(mostContacted.sellerName || mostContacted.title) : "No data yet"],
+              ["Top Performing Seller", topSeller ? escapeHTML(topSeller.sellerName || topSeller.title) : "No sales yet"],
+              ["Top Performing Service Provider", topProvider ? escapeHTML(topProvider.sellerName || topProvider.title) : "No service sales yet"],
+              ["Most Viewed Business", mostContacted ? escapeHTML(mostContacted.sellerName || mostContacted.title) : "No views yet"],
+              ["Most Contacted Business", mostContacted ? escapeHTML(mostContacted.sellerName || mostContacted.title) : "No enquiries yet"]
+            ].map(([label, value]) => metricCard(label, value)).join("")}
+          </div>
+        </div>
+        <div class="report-section">
+          <h3>Categories Performance</h3>
+          <div class="mini-list">${businessRows(categoryBusinesses, ["Rooms & Property", "Electronics", "Vehicles", "Building & Construction", "Plumbing", "Electrical", "Carpentry", "Transport", "Beauty & Fashion", "Other Services"])}</div>
+        </div>
+        <div class="report-section">
+          <h3>Location Performance</h3>
+          <div class="mini-list">${businessRows(areaBusinesses, ["Alexandra", "Midrand", "Sandton", "Johannesburg CBD", "Soweto", "Tembisa", "Other Areas"])}</div>
+        </div>
+        <div class="report-section">
+          <h3>Business Verification</h3>
+          <div class="report-grid">
+            ${[
+              ["Verified Businesses", verifiedBusinesses],
+              ["Pending Verification", pendingVerification],
+              ["Rejected Verification Requests", rejectedVerification]
+            ].map(([label, value]) => metricCard(label, value)).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderActivityReports() {
+      const listings = state.data?.listings || {};
+      const pending = listings.pending || [];
+      const approved = listings.approved || [];
+      const rejected = listings.rejected || [];
+      const flagged = listings.flagged || [];
+      const taken = listings.taken || [];
+      const changedMind = listings.changedMind || [];
+      const orders = state.data?.orders || [];
+      const activities = state.data?.activities || [];
+      const analytics = state.data?.analytics?.events || [];
+      const all = allListings();
+      const items = all.filter((item) => item.listingType !== "service");
+      const services = all.filter((item) => item.listingType === "service");
+      const today = shortDate();
+      const pageViews = analytics.filter((item) => item.type === "page_view");
+      const visitorsToday = analytics.filter((item) => shortDate(item.createdAt) === today);
+      const visitorsWeek = analytics.filter((item) => inLastDays(item.createdAt, 7));
+      const visitorsMonth = analytics.filter((item) => inLastDays(item.createdAt, 31));
+      const returningVisitors = Object.values(countBy(analytics, (item) => item.visitorId)).filter((count) => count > 1).length;
+      const delivered = orders.filter((item) => item.deliveryStatus === "delivered");
+      const cancelled = orders.filter((item) => item.deliveryStatus === "cancelled_on_way");
+      const completedServices = delivered.filter((item) => item.listingType === "service");
+      const completedSales = delivered.filter((item) => item.listingType !== "service");
+      const revenue = delivered.reduce((sum, item) => sum + moneyNumber(item.saleAmount), 0);
+      const commission = delivered.reduce((sum, item) => sum + moneyNumber(item.serviceCharge), 0);
+      const cancellationFees = cancelled.reduce((sum, item) => sum + moneyNumber(item.cancellationFee), 0);
+      const newPostsToday = all.filter((item) => shortDate(item.createdAt) === today).length;
+      const newUsersMonth = uniqueCount(visitorsMonth, "visitorId");
+      const activeSellers = uniqueCount(items, "sellerPhone");
+      const activeServiceProviders = uniqueCount(services, "sellerPhone");
+      const whatsappClicks = analytics.filter((item) => item.type === "whatsapp_click");
+      const phoneClicks = analytics.filter((item) => item.type === "phone_click");
+      const categoryViews = countBy(analytics.filter((item) => item.category), (item) => item.category);
+      const listingClicks = countBy(whatsappClicks.filter((item) => item.listingId), (item) => item.listingId);
+      const topListingId = Object.entries(listingClicks).sort((a, b) => b[1] - a[1])[0]?.[0] || "";
+      const topListing = all.find((item) => item.id === topListingId);
+      const serviceClicks = whatsappClicks.filter((item) => item.listingType === "service");
+      const topServiceId = Object.entries(countBy(serviceClicks, (item) => item.listingId)).sort((a, b) => b[1] - a[1])[0]?.[0] || "";
+      const topService = all.find((item) => item.id === topServiceId);
+      const sourceMap = countBy(analytics, (item) => item.source || "Direct");
+      const areaMap = countBy(analytics, (item) => item.area || "Other Areas");
+      const adminLog = countBy(activities, (item) => item.type || "activity");
+      const verificationRequests = all.filter((item) => item.verification?.required).length;
+      const businessUsers = activeSellers + activeServiceProviders;
+      activityDashboard.innerHTML = `
+        <div class="report-grid">
+          ${[
+            ["Total Visitors", uniqueCount(analytics, "visitorId")],
+            ["Visitors Today", uniqueCount(visitorsToday, "visitorId")],
+            ["Visitors This Week", uniqueCount(visitorsWeek, "visitorId")],
+            ["Visitors This Month", uniqueCount(visitorsMonth, "visitorId")],
+            ["Returning Visitors", returningVisitors],
+            ["Total Views", pageViews.length],
+            ["WhatsApp Clicks", whatsappClicks.length],
+            ["Phone Call Clicks", phoneClicks.length]
+          ].map(([label, value]) => metricCard(label, value)).join("")}
+        </div>
+        <div class="report-section">
+          <h3>Listings Activity</h3>
+          <div class="report-grid">
+            ${[
+              ["Total Items Posted", items.length],
+              ["Total Services Posted", services.length],
+              ["New Posts Today", newPostsToday],
+              ["Approved Posts", approved.length],
+              ["Pending Approval", pending.length],
+              ["Rejected Posts", rejected.length],
+              ["Expired Posts", 0],
+              ["Flagged Listings", flagged.length]
+            ].map(([label, value]) => metricCard(label, value)).join("")}
+          </div>
+        </div>
+        <div class="report-section">
+          <h3>Sales & Leads</h3>
+          <div class="report-grid">
+            ${[
+              ["Total Orders / Bookings", orders.length + appointments.length],
+              ["Completed Sales", completedSales.length],
+              ["Completed Services", completedServices.length],
+              ["Cancelled Orders", cancelled.length],
+              ["Revenue Generated", moneyTotal(revenue)],
+              ["Platform Commission Earned (15%)", moneyTotal(commission)],
+              ["Change-Mind Fees", moneyTotal(cancellationFees)],
+              ["Total Enquiries", whatsappClicks.length + phoneClicks.length]
+            ].map(([label, value]) => metricCard(label, value)).join("")}
+          </div>
+        </div>
+        <div class="report-section">
+          <h3>User Activity</h3>
+          <div class="report-grid">
+            ${[
+              ["Total Registered Users", uniqueCount(analytics, "visitorId")],
+              ["New Users This Month", newUsersMonth],
+              ["Active Sellers", activeSellers],
+              ["Active Buyers", uniqueCount([...orders, ...appointments], "buyerPhone")],
+              ["Active Service Providers", activeServiceProviders],
+              ["Registered Businesses", businessUsers]
+            ].map(([label, value]) => metricCard(label, value)).join("")}
+          </div>
+        </div>
+        <div class="report-section">
+          <h3>Popular Categories</h3>
+          <div class="mini-list">${topRows(categoryViews, ["Rooms to Rent", "Electronics", "Furniture", "Transport Services", "Plumbing", "Electrical Services", "Building Services"])}</div>
+        </div>
+        <div class="report-section">
+          <h3>Top Performing Listings</h3>
+          <div class="report-grid">
+            ${[
+              ["Most Viewed Item", topListing?.listingType !== "service" ? escapeHTML(topListing?.title || "No item clicks yet") : "No item clicks yet"],
+              ["Most Viewed Service", topService ? escapeHTML(topService.title) : "No service clicks yet"],
+              ["Most Contacted Seller", topListing?.listingType !== "service" ? escapeHTML(topListing?.sellerName || "No seller yet") : "No seller yet"],
+              ["Most Contacted Service Provider", topService ? escapeHTML(topService.sellerName || "No provider yet") : "No provider yet"]
+            ].map(([label, value]) => metricCard(label, value)).join("")}
+          </div>
+        </div>
+        <div class="report-section">
+          <h3>Marketing Performance</h3>
+          <div class="mini-list">${topRows(sourceMap, ["Facebook", "WhatsApp", "Google", "Direct", "Referral"])}</div>
+        </div>
+        <div class="report-section">
+          <h3>Location Statistics</h3>
+          <div class="mini-list">${topRows(areaMap, ["Alexandra", "Sandton", "Midrand", "Johannesburg CBD", "Soweto", "Tembisa", "Other Areas"])}</div>
+        </div>
+        <div class="report-section">
+          <h3>For Admin Only</h3>
+          <div class="report-grid">
+            ${[
+              ["Daily Activity Log", activities.filter((item) => shortDate(item.createdAt) === today).length],
+              ["Reports Submitted", adminLog.reported || 0],
+              ["User Complaints", adminLog.complaint || 0],
+              ["Flagged Listings", flagged.length],
+              ["Verification Requests", verificationRequests],
+              ["Payment Records", orders.length],
+              ["Commission Records", delivered.length],
+              ["Commission Earned", moneyTotal(commission)]
+            ].map(([label, value]) => metricCard(label, value)).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderReceiptOptions() {
+      const approved = state.data?.listings?.approved || [];
+      if (!approved.length) {
+        receiptListing.innerHTML = `<option value="">No approved listings yet</option>`;
+        return;
+      }
+      receiptListing.innerHTML = `<option value="">Select approved listing</option>` + approved.map((item) => (
+        `<option value="${escapeHTML(item.id)}" data-price="${escapeHTML(item.price)}">${escapeHTML(item.title)} - ${money(item.price)}</option>`
+      )).join("");
+    }
+
+    function selectedListing() {
+      const approved = state.data?.listings?.approved || [];
+      return approved.find((item) => item.id === receiptListing.value);
+    }
+
+    function renderReceiptHistory() {
+      const orders = state.data?.orders || [];
+      if (!orders.length) {
+        receiptHistory.innerHTML = `<div class="empty">No receipts created yet.</div>`;
+        return;
+      }
+      receiptHistory.innerHTML = `
+        <table class="receipt-table">
+          <thead>
+            <tr>
+              <th>Receipt</th>
+              <th>Buyer</th>
+              <th>Item / Service</th>
+              <th>Status</th>
+              <th>Total Due</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${orders.map((item) => `
+              <tr>
+                <td>${escapeHTML(item.receiptNumber)}</td>
+                <td>${escapeHTML(item.buyerName)}<br>${escapeHTML(item.buyerPhone)}</td>
+                <td>${escapeHTML(item.listingTitle)}<br><span class="hint">${item.listingType === "service" ? `Service type: ${escapeHTML(item.listingCategory || "Service")}` : escapeHTML(item.listingCondition || "Condition not stated")}</span></td>
+                <td>${item.deliveryStatus === "delivered" ? "Delivered" : "Changed mind during delivery"}</td>
+                <td>${money(item.totalDue)}</td>
+                <td>
+                  <div class="actions">
+                    <button class="btn btn-secondary" type="button" data-receipt-id="${escapeHTML(item.id)}">Open Receipt</button>
+                    <button class="btn btn-primary" type="button" data-receipt-pdf="${escapeHTML(item.id)}">Download PDF</button>
+                  </div>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderAppointments() {
+      const appointments = state.data?.appointments || [];
+      if (!appointments.length) {
+        appointmentsList.innerHTML = `<div class="empty">No basket appointments booked yet.</div>`;
+        return;
+      }
+      appointmentsList.innerHTML = `
+        <table class="receipt-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Buyer</th>
+              <th>Delivery / Meetup</th>
+              <th>Seller</th>
+              <th>Booked</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${appointments.map((item) => `
+              <tr>
+                <td>
+                  <strong>${escapeHTML(item.listingTitle)}</strong><br>
+                  <span class="hint">${escapeHTML(item.listingCategory || "Item")} | ${money(item.listingPrice)}</span><br>
+                  <span class="hint">Listing ID: ${escapeHTML(item.listingId)}</span>
+                </td>
+                <td>
+                  ${escapeHTML(item.buyerName)}<br>
+                  ${escapeHTML(item.buyerPhone)}<br>
+                  <span class="hint">${escapeHTML(item.buyerEmail || "No email provided")}</span>
+                </td>
+                <td>
+                  <strong>${escapeHTML(item.meetupDate)} ${escapeHTML(item.meetupTime)}</strong><br>
+                  ${escapeHTML(item.meetupLocation || "Meetup location not stated")}<br>
+                  <span class="hint">${escapeHTML(item.deliveryAddress || "No delivery address")}</span>
+                </td>
+                <td>
+                  ${escapeHTML(item.sellerName || "Seller")}<br>
+                  ${escapeHTML(item.sellerPhone || "")}<br>
+                  <span class="hint">${escapeHTML(item.sellerEmail || "No seller email")} | ${escapeHTML(item.sellerLocation || "No seller location")}</span>
+                </td>
+                <td>${escapeHTML(new Date(item.createdAt || Date.now()).toLocaleString("en-ZA"))}<br><span class="badge">${escapeHTML(item.status || "booked")}</span></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function receiptHTML(receipt) {
+      const delivered = receipt.deliveryStatus === "delivered";
+      const serviceReceipt = receipt.listingType === "service";
+      return `<!doctype html>
+<html><head><meta charset="utf-8"><title>${escapeHTML(receipt.receiptNumber)}</title>
+<style>@page{size:A4;margin:16mm}body{font-family:Arial,sans-serif;max-width:760px;margin:24px auto;color:#151816}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}.actions button{border:0;border-radius:8px;padding:12px 16px;font-weight:800;cursor:pointer}.print{color:#fff;background:#ff3d8d}.back{background:#fff0f7;color:#b51662}h1{color:#b51662}.box{border:1px solid #efd3f3;border-radius:8px;padding:16px;margin:12px 0;break-inside:avoid}.row{display:flex;justify-content:space-between;gap:18px;border-bottom:1px solid #f2e5f4;padding:9px 0}.row:last-child{border-bottom:0}.total{font-size:20px;font-weight:900;color:#b51662}.stamp{display:inline-grid;place-items:center;width:150px;height:150px;margin-top:12px;border:5px double #ff3d8d;border-radius:999px;color:#ff3d8d;text-align:center;font-weight:900;text-transform:uppercase;transform:rotate(-8deg)}.note{color:#625d73;font-size:12px}@media print{.actions{display:none}body{margin:0}}</style></head>
+<body>
+<div class="actions"><button class="print" onclick="window.print()">Print / Save as PDF</button><button class="back" onclick="window.close()">Close</button></div>
+<h1>Mzansi Market Place Receipt</h1>
+<div class="box"><strong>Business:</strong> Mzansi Market Place<br><strong>Receipt:</strong> ${escapeHTML(receipt.receiptNumber)}<br><strong>Date:</strong> ${escapeHTML(longDate(receipt.createdAt))}<br><strong>Time:</strong> ${escapeHTML(new Date(receipt.createdAt).toLocaleTimeString("en-ZA"))}<br><strong>Payment type:</strong> ${escapeHTML(receipt.paymentMethod || "Cash on Delivery")}</div>
+<div class="box"><h2>Customer</h2><div class="row"><span>Buyer</span><strong>${escapeHTML(receipt.buyerName)}</strong></div><div class="row"><span>Contact</span><strong>${escapeHTML(receipt.buyerPhone)}</strong></div></div>
+<div class="box"><h2>${serviceReceipt ? "Service Purchased" : "Item Purchased"}</h2><div class="row"><span>${serviceReceipt ? "Service name" : "Name of item"}</span><strong>${escapeHTML(receipt.listingTitle)}</strong></div>${serviceReceipt ? `<div class="row"><span>Type of service</span><strong>${escapeHTML(receipt.listingCategory || "Service")}</strong></div><div class="row"><span>Duration</span><strong>${escapeHTML(receipt.serviceDuration || "Not stated")}</strong></div>` : `<div class="row"><span>Condition of item</span><strong>${escapeHTML(receipt.listingCondition || "Not stated")}</strong></div>`}<div class="row"><span>${serviceReceipt ? "Service provider" : "Seller"}</span><strong>${escapeHTML(receipt.sellerName || (serviceReceipt ? "Service provider" : "Seller"))}</strong></div><div class="row"><span>${serviceReceipt ? "Provider contact" : "Seller contact"}</span><strong>${escapeHTML(receipt.sellerPhone || "")}</strong></div></div>
+<div class="box"><h2>Charges</h2><div class="row"><span>${serviceReceipt ? "Service result" : "Delivery result"}</span><strong>${delivered ? (serviceReceipt ? "Service completed" : "Delivered") : "Buyer changed mind while delivery was on the way"}</strong></div><div class="row"><span>${serviceReceipt ? "Service amount" : "Sale amount"}</span><strong>${money(receipt.saleAmount)}</strong></div><div class="row"><span>Mzansi Market Place 15% charge</span><strong>${money(receipt.serviceCharge)}</strong></div><div class="row"><span>R30 change-of-mind delivery fee</span><strong>${money(receipt.cancellationFee)}</strong></div><div class="row total"><span>Total due</span><strong>${money(receipt.totalDue)}</strong></div></div>
+<div class="box"><strong>Policy:</strong> Payment on delivery. No delivery, no payment, except when the buyer changes their mind while delivery is already on the way. In that case the R30 fee applies.<br><strong>Notes:</strong> ${escapeHTML(receipt.notes || "None")}</div>
+<div class="stamp">${delivered ? "Paid" : "Fee"}<br>Receipt</div>
+<p class="note">Mzansi Market Place charges 15% on completed sales and R30 for change-of-mind cancellation during delivery.</p>
+</body></html>`;
+    }
+
+    function openReceipt(receipt) {
+      const receiptWindow = window.open("", "_blank");
+      if (!receiptWindow) {
+        showNotice("Allow pop-ups, then open the receipt again.");
+        return;
+      }
+      receiptWindow.document.open();
+      receiptWindow.document.write(receiptHTML(receipt));
+      receiptWindow.document.close();
+      receiptWindow.focus();
+    }
+
+    async function downloadReceiptPDF(receipt) {
+      const response = await adminFetch(`/api/admin/receipt/pdf?id=${encodeURIComponent(receipt.id)}`, {
+        method: "GET"
+      });
+      if (!response.ok) {
+        showNotice("Receipt PDF could not be downloaded.");
+        return;
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${receipt.receiptNumber || "mzansi-receipt"}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function currentList() {
+      return state.data?.listings?.[state.view] || [];
+    }
+
+    function viewLabel(view) {
+      return {
+        pending: "pending listings",
+        approved: "approved listings",
+        taken: "taken items",
+        changedMind: "changed-mind items",
+        rejected: "rejected listings",
+        flagged: "flagged listings"
+      }[view] || "listings";
+    }
+
+    function listingActions(item) {
+      if (["taken", "changedMind"].includes(state.view)) {
+        return `<span class="hint">Recorded as ${state.view === "taken" ? "taken" : "changed mind"} and included in business performance.</span>`;
+      }
+      return `
+        ${state.view === "approved" ? `<button class="btn btn-primary" type="button" data-action="prepare-receipt" data-id="${escapeHTML(item.id)}">${item.listingType === "service" ? "Service Receipt" : "Mark Taken / Receipt"}</button>` : ""}
+        ${state.view !== "approved" ? `<button class="btn btn-primary" type="button" data-action="move" data-to="approved" data-id="${escapeHTML(item.id)}">Approve</button>` : ""}
+        ${state.view !== "rejected" ? `<button class="btn btn-danger" type="button" data-action="move" data-to="rejected" data-id="${escapeHTML(item.id)}">Reject</button>` : ""}
+        ${state.view !== "flagged" ? `<button class="btn btn-warning" type="button" data-action="move" data-to="flagged" data-id="${escapeHTML(item.id)}">Flag</button>` : ""}
+        ${state.view !== "flagged" ? `<button class="btn btn-secondary" type="button" data-action="request-changes" data-id="${escapeHTML(item.id)}">Request Changes</button>` : ""}
+        <button class="btn btn-secondary" type="button" data-action="delete" data-id="${escapeHTML(item.id)}">Delete</button>
+      `;
+    }
+
+    function prepareReceiptForListing(id) {
+      const item = (state.data?.listings?.approved || []).find((entry) => entry.id === id);
+      if (!item) {
+        showNotice("This post must be approved before you can create a receipt.");
+        return;
+      }
+      receiptListing.value = item.id;
+      deliveryStatus.value = "delivered";
+      saleAmount.disabled = false;
+      saleAmount.required = true;
+      saleAmount.value = item.price || "";
+      receiptPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.querySelector("#buyerName").focus({ preventScroll: true });
+      showNotice(item.listingType === "service" ? "Service receipt ready. Add customer details, then create receipt." : "Receipt ready. Add buyer details, then create receipt to mark as taken.");
+    }
+
+    const moderationReasons = [
+      "Duplicate Listing",
+      "Wrong Category",
+      "Inappropriate Content",
+      "Misleading Information",
+      "Contact Details in Description",
+      "Prohibited Item",
+      "Poor Quality Images",
+      "Incomplete Information"
+    ];
+
+    function askModerationReason(actionLabel) {
+      const reason = window.prompt(`${actionLabel} reason:\n\n${moderationReasons.join("\n")}\n\nType one reason or write your own:`, moderationReasons[0]);
+      if (reason === null) return null;
+      const notes = window.prompt("Extra moderator notes, if needed:", "") || "";
+      return { reason: reason.trim() || actionLabel, notes: notes.trim() };
+    }
+
+    async function moveListingAction({ id, from = state.view, to, reason = "", notes = "", moderationAction = "" }) {
+      const response = await adminFetch("/api/admin/action", {
+        method: "POST",
+        body: JSON.stringify({ action: "move", from, to, id, reason, notes, moderationAction })
+      });
+      return response.ok;
+    }
+
+    async function bulkMoveSelected(to) {
+      const ids = [...state.selectedListings];
+      if (!ids.length) {
+        showNotice("Select at least one listing first.");
+        return;
+      }
+      let reason = "";
+      let notes = "";
+      if (to === "rejected") {
+        const result = askModerationReason("Bulk Reject");
+        if (!result) return;
+        reason = result.reason;
+        notes = result.notes;
+      }
+      for (const id of ids) {
+        await moveListingAction({ id, to, reason, notes, moderationAction: to === "rejected" ? "bulk_reject" : "bulk_approve" });
+      }
+      state.selectedListings.clear();
+      showNotice(to === "approved" ? "Selected listings approved." : "Selected listings rejected.");
+      await loadData();
+    }
+
+    function renderListings() {
+      const listings = state.data?.listings || {};
+      const today = shortDate();
+      const approvedToday = (listings.approved || []).filter((item) => shortDate(item.updatedAt) === today).length;
+      const rejectedToday = (listings.rejected || []).filter((item) => shortDate(item.updatedAt) === today).length;
+      moderationStats.innerHTML = [
+        ["Pending Approvals", (listings.pending || []).length],
+        ["Approved Today", approvedToday],
+        ["Rejected Today", rejectedToday],
+        ["Flagged Listings", (listings.flagged || []).length],
+        ["Verification Requests", allListings().filter((item) => item.verification?.required).length],
+        ["Average Approval Time", avgApprovalTimeHours()]
+      ].map(([label, value]) => metricCard(label, value)).join("");
+
+      const list = filteredModerationList();
+      state.selectedListings.forEach((id) => {
+        if (!list.some((item) => item.id === id)) state.selectedListings.delete(id);
+      });
+      selectAllListings.checked = Boolean(list.length) && list.every((item) => state.selectedListings.has(item.id));
+      if (!list.length) {
+        queueTable.innerHTML = "";
+        listingList.innerHTML = `<div class="empty">No ${viewLabel(state.view)} right now.</div>`;
+        return;
+      }
+
+      queueTable.innerHTML = `
+        <div class="queue-row">
+          <strong>Status</strong><strong>Date</strong><strong>Category</strong><strong>Listing Title</strong><strong>Seller</strong><strong>Location</strong><strong>Price</strong>
+        </div>
+        ${list.map((item) => `
+          <div class="queue-row">
+            <span>${escapeHTML(item.approvalStatus || state.view)}</span>
+            <span>${escapeHTML(compactDate(item.createdAt))}</span>
+            <span>${escapeHTML(item.category || "")}</span>
+            <span>${escapeHTML(item.title || "")}</span>
+            <span>${escapeHTML(item.sellerName || "")}</span>
+            <span>${escapeHTML(item.meetupHub || "Not stated")}</span>
+            <span>${money(item.price)}</span>
+          </div>
+        `).join("")}
+      `;
+
+      listingList.innerHTML = list.map((item) => {
+        const warnings = warningText(item);
+        return `
+          <article class="listing-card" data-listing-id="${escapeHTML(item.id)}">
+            <div class="images">
+              ${mediaTiles(item)}
+            </div>
+            <div>
+              <label class="select-line"><input type="checkbox" data-select-listing="${escapeHTML(item.id)}" ${state.selectedListings.has(item.id) ? "checked" : ""}> Select for bulk action</label>
+              <div class="actions">
+                <span class="badge">${escapeHTML(item.approvalStatus || state.view)}</span>
+                ${priorityBadge(item)}
+                ${item.isFeatured ? `<span class="badge gold">Spotlight</span>` : ""}
+                ${item.isUrgent ? `<span class="badge red">Urgent</span>` : ""}
+              </div>
+              <h3 style="margin-top:10px;">${escapeHTML(item.title)}</h3>
+              <p>${escapeHTML(item.description || "")}</p>
+              <div class="detail-grid">
+                <div class="detail"><strong>Listing ID</strong>${escapeHTML(item.id)}</div>
+                <div class="detail"><strong>Date Submitted</strong>${escapeHTML(new Date(item.createdAt || Date.now()).toLocaleString("en-ZA"))}</div>
+                <div class="detail"><strong>Verification Status</strong>${escapeHTML(verificationStatus(item))}</div>
+                ${item.listingType === "service" ? `
+                  <div class="detail"><strong>Price Starts</strong>${money(item.price)}</div>
+                  <div class="detail"><strong>Service Category</strong>${escapeHTML(item.category || "")}</div>
+                  <div class="detail"><strong>Duration</strong>${escapeHTML(item.serviceDuration || "Not stated")}</div>
+                  <div class="detail"><strong>Type</strong>Service</div>
+                  <div class="detail"><strong>Provider</strong>${escapeHTML(item.sellerName || "")}</div>
+                  <div class="detail"><strong>Location</strong>${escapeHTML(item.meetupHub || "Not stated")}</div>
+                ` : `
+                  <div class="detail"><strong>Price</strong>${money(item.price)}</div>
+                  <div class="detail"><strong>Category</strong>${escapeHTML(item.category || "")}</div>
+                  <div class="detail"><strong>Condition</strong>${escapeHTML(item.condition || "")}</div>
+                  <div class="detail"><strong>Delivery</strong>${escapeHTML((item.delivery || []).join(", ") || "Not stated")}</div>
+                  <div class="detail"><strong>Meetup Hub</strong>${escapeHTML(item.meetupHub || "")}</div>
+                  <div class="detail"><strong>Images Uploaded</strong>${(item.images || []).length + (item.video ? 1 : 0) + (item.attachment ? 1 : 0)}</div>
+                `}
+              </div>
+              <div class="private">
+                User Name: ${escapeHTML(item.sellerName || "")} | Phone Number: ${escapeHTML(item.sellerPhone || "")} | Email Address: ${escapeHTML(item.sellerEmail || "Not provided")}
+              </div>
+              ${attachmentHTML(item)}
+              ${verificationHTML(item)}
+              ${warnings.length ? `<p><strong>System warnings:</strong> ${warnings.map(escapeHTML).join(" ")}</p>` : ""}
+              ${item.moderation?.reason ? `<p><strong>Moderation reason:</strong> ${escapeHTML(item.moderation.reason)}</p>` : ""}
+              ${item.moderation?.notes ? `<p><strong>Moderator notes:</strong> ${escapeHTML(item.moderation.notes)}</p>` : ""}
+              <div class="actions">
+                ${listingActions(item)}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      loginError.classList.remove("is-visible");
+      try {
+        const response = await fetch(apiURL("/api/admin/login"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: document.querySelector("#adminPassword").value })
+        });
+        if (!response.ok) throw new Error("Incorrect password");
+        const data = await response.json();
+        state.token = data.token;
+        localStorage.setItem("mzansi-admin-token", state.token);
+        loginScreen.style.display = "none";
+        portal.classList.add("is-visible");
+        await loadData();
+      } catch (error) {
+        loginError.classList.add("is-visible");
+      }
+    });
+
+    document.querySelector("#refreshButton").addEventListener("click", loadData);
+    document.querySelector("#logoutButton").addEventListener("click", () => {
+      localStorage.removeItem("mzansi-admin-token");
+      state.token = "";
+      state.data = null;
+      portal.classList.remove("is-visible");
+      loginScreen.style.display = "block";
+    });
+
+    receiptListing.addEventListener("change", () => {
+      const item = selectedListing();
+      saleAmount.value = item ? item.price : "";
+    });
+
+    deliveryStatus.addEventListener("change", () => {
+      const cancelled = deliveryStatus.value === "cancelled_on_way";
+      saleAmount.disabled = cancelled;
+      saleAmount.required = !cancelled;
+      if (cancelled) saleAmount.value = "0";
+      if (!cancelled && selectedListing()) saleAmount.value = selectedListing().price;
+    });
+
+    receiptForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const response = await adminFetch("/api/admin/receipt", {
+        method: "POST",
+        body: JSON.stringify({
+          listingId: receiptListing.value,
+          buyerName: document.querySelector("#buyerName").value.trim(),
+          buyerPhone: document.querySelector("#buyerPhone").value.trim(),
+          saleAmount: saleAmount.value,
+          deliveryStatus: deliveryStatus.value,
+          paymentMethod: paymentMethod.value,
+          notes: document.querySelector("#receiptNotes").value.trim()
+        })
+      });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: "Receipt could not be created" }));
+        showNotice(error.error || "Receipt could not be created");
+        return;
+      }
+      const data = await response.json();
+      showNotice("Receipt created.");
+      receiptForm.reset();
+      saleAmount.disabled = false;
+      saleAmount.required = true;
+      await loadData();
+      openReceipt(data.receipt);
+    });
+
+    receiptHistory.addEventListener("click", (event) => {
+      const openButton = event.target.closest("button[data-receipt-id]");
+      const pdfButton = event.target.closest("button[data-receipt-pdf]");
+      if (!openButton && !pdfButton) return;
+      const receiptId = openButton?.dataset.receiptId || pdfButton?.dataset.receiptPdf;
+      const receipt = (state.data?.orders || []).find((item) => item.id === receiptId);
+      if (!receipt) return;
+      if (pdfButton) {
+        downloadReceiptPDF(receipt).catch(() => showNotice("Receipt PDF could not be downloaded."));
+        return;
+      }
+      openReceipt(receipt);
+    });
+
+    document.querySelector(".tabs").addEventListener("click", (event) => {
+      const tab = event.target.closest(".tab");
+      if (!tab) return;
+      document.querySelectorAll(".tab").forEach((item) => item.classList.toggle("is-active", item === tab));
+      state.view = tab.dataset.view;
+      state.selectedListings.clear();
+      renderListings();
+    });
+
+    [moderationSearch, moderationCategory, moderationPriority].forEach((control) => {
+      control.addEventListener("input", () => {
+        state.selectedListings.clear();
+        renderListings();
+      });
+    });
+
+    selectAllListings.addEventListener("change", () => {
+      const list = filteredModerationList();
+      if (selectAllListings.checked) {
+        list.forEach((item) => state.selectedListings.add(item.id));
+      } else {
+        list.forEach((item) => state.selectedListings.delete(item.id));
+      }
+      renderListings();
+    });
+
+    bulkApproveButton.addEventListener("click", () => bulkMoveSelected("approved"));
+    bulkRejectButton.addEventListener("click", () => bulkMoveSelected("rejected"));
+
+    listingList.addEventListener("click", async (event) => {
+      const selector = event.target.closest("input[data-select-listing]");
+      if (selector) {
+        if (selector.checked) state.selectedListings.add(selector.dataset.selectListing);
+        else state.selectedListings.delete(selector.dataset.selectListing);
+        selectAllListings.checked = filteredModerationList().every((item) => state.selectedListings.has(item.id));
+        return;
+      }
+      const mediaButtonElement = event.target.closest("button[data-media-key]");
+      if (mediaButtonElement) {
+        openMediaViewer(mediaButtonElement.dataset.mediaKey);
+        return;
+      }
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      if (button.dataset.action === "prepare-receipt") {
+        prepareReceiptForListing(button.dataset.id);
+        return;
+      }
+      if (button.dataset.action === "request-changes") {
+        const result = askModerationReason("Request Changes");
+        if (!result) return;
+        const ok = await moveListingAction({ id: button.dataset.id, to: "flagged", reason: result.reason, notes: result.notes, moderationAction: "request_changes" });
+        if (ok) {
+          showNotice("Changes requested and listing moved to flagged review.");
+          await loadData();
+        }
+        return;
+      }
+      if (button.dataset.action === "delete") {
+        const response = await adminFetch("/api/admin/action", {
+          method: "POST",
+          body: JSON.stringify({ action: "delete", from: state.view, id: button.dataset.id })
+        });
+        if (response.ok) {
+          showNotice("Listing deleted.");
+          await loadData();
+        }
+        return;
+      }
+      let reason = "";
+      let notes = "";
+      if (button.dataset.to === "rejected") {
+        const result = askModerationReason("Reject");
+        if (!result) return;
+        reason = result.reason;
+        notes = result.notes;
+      }
+      if (button.dataset.to === "flagged") {
+        const result = askModerationReason("Flag for Review");
+        if (!result) return;
+        reason = result.reason;
+        notes = result.notes;
+      }
+      const response = await adminFetch("/api/admin/action", {
+        method: "POST",
+        body: JSON.stringify({ action: button.dataset.action, from: state.view, to: button.dataset.to, id: button.dataset.id, reason, notes })
+      });
+      if (response.ok) {
+        showNotice(button.dataset.action === "delete" ? "Listing deleted." : `Listing moved to ${button.dataset.to}.`);
+        await loadData();
+      }
+    });
+
+    mediaLightboxClose.addEventListener("click", closeMediaViewer);
+    mediaLightbox.addEventListener("click", (event) => {
+      if (event.target === mediaLightbox) closeMediaViewer();
+    });
+    mediaLightboxControls.addEventListener("click", (event) => {
+      const control = event.target.closest("button[data-zoom]");
+      if (!control) return;
+      if (control.dataset.zoom === "in") setMediaZoom(activeZoom + 0.25);
+      if (control.dataset.zoom === "out") setMediaZoom(activeZoom - 0.25);
+      if (control.dataset.zoom === "reset") setMediaZoom(1);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && mediaLightbox.classList.contains("is-visible")) closeMediaViewer();
+    });
+
+    if (state.token) {
+      loginScreen.style.display = "none";
+      portal.classList.add("is-visible");
+      loadData().catch(() => {});
+    }
+    setInterval(() => {
+      if (state.token && portal.classList.contains("is-visible")) {
+        loadData().catch(() => {});
+      }
+    }, 10000);
+    moderationDate.textContent = `Today: ${longDate()}`;
+  </script>
+</body>
+</html>
